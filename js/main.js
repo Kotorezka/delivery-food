@@ -28,7 +28,6 @@ buttonOut = document.querySelector('.button-out');
 
 //============VARIABLE==============================
 let login = localStorage.getItem('delivery');
-
 const cart = [];
 
 //============/VARIABLE=============================
@@ -53,6 +52,7 @@ const toggleModalAuth = () => {
 const authorized = () => {
 	const logOut = () => {
 		login = null;
+		cart.length = 0;
 		userName.style.display = '';
 		buttonOut.style.display = '';
 		buttonAuth.style.display = '';
@@ -69,6 +69,7 @@ const authorized = () => {
 	buttonOut.style.display = 'flex';
 	cartButton.style.display = 'flex';
 	buttonOut.addEventListener('click', logOut);
+	loadCart();
 };
 
 const checkAuth = () => login ? authorized() : noAuthorized();
@@ -188,6 +189,18 @@ const returnMain = () => {
 
 }
 
+const saveCart = () => {
+	localStorage.setItem(login, JSON.stringify(cart));
+}
+
+const loadCart = () => {
+	if (localStorage.getItem(login)) {
+		JSON.parse(localStorage.getItem(login)).forEach(function(item){
+			cart.push(item);
+		});
+	}
+}
+
 const addToCart = (event) => {
 	const target = event.target;
 	const buttonAddToCart = target.closest('.button-add-cart');
@@ -214,7 +227,7 @@ const addToCart = (event) => {
 				})
 		};
 	}
-	
+	saveCart();
 }
 
 const renderCart = () => {
@@ -255,9 +268,11 @@ const changeCount = (event) => {
 		}
 		renderCart();
 	}
+	saveCart();
 }
 
-function init () {
+
+const init = () => {
 	getData('./db/partners.json').then(function (data) {
 		data.forEach(createCardRestaurant);
 	});
